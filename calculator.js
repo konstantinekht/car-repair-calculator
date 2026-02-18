@@ -361,28 +361,27 @@ document.addEventListener('DOMContentLoaded', function() {
         let recommendation;
         let savings;
         
-        // FIXED: Proper recommendation logic
-        if (repairToValueRatio > 0.5 || mileage > 150000) {
-            // High repair cost or high mileage = suggest replace
+        // Determine which option is cheaper
+        if (repairOption.totalCost < replaceOption.totalCost) {
+            recommendation = 'REPAIR';
+            savings = replaceOption.totalCost - repairOption.totalCost;
+        } else {
             recommendation = 'REPLACE';
             savings = repairOption.totalCost - replaceOption.totalCost;
-        } else {
-            // Otherwise, go with whichever is cheaper
-            if (repairOption.totalCost < replaceOption.totalCost) {
-                recommendation = 'REPAIR';
-                savings = replaceOption.totalCost - repairOption.totalCost;
-            } else {
-                recommendation = 'REPLACE';
-                savings = repairOption.totalCost - replaceOption.totalCost;
-            }
         }
+        
+        // Add warning note if repair-to-value ratio is high (even if repair is cheaper)
+        const hasHighRatio = repairToValueRatio > 0.5;
+        const hasHighMileage = mileage > 150000;
         
         return {
             recommendation,
             savings: Math.abs(savings),
             repairOption,
             replaceOption,
-            repairToValueRatio
+            repairToValueRatio,
+            hasHighRatio,
+            hasHighMileage
         };
     }
 
@@ -405,6 +404,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayResults(results) {
         const resultsContainer = document.getElementById('results');
         
+        // Build warning message if applicable
+        let warningMessage = '';
+        if (results.recommendation === 'REPAIR' && results.hasHighRatio) {
+            warningMessage = `
+                <div class="warning-box">
+                    <strong>⚠️ Note:</strong> While repairing is cheaper overall, the repair cost is ${(results.repairToValueRatio * 100).toFixed(0)}% of your car's value. 
+                    Many experts recommend replacing when repair costs exceed 50% of value. Consider whether this repair might be followed by others soon.
+                </div>
+            `;
+        }
+        if (results.recommendation === 'REPAIR' && results.hasHighMileage) {
+            warningMessage += `
+                <div class="warning-box">
+                    <strong>⚠️ Note:</strong> Your car has over 150,000 miles. Even if repair is cheaper now, expect higher maintenance costs going forward.
+                </div>
+            `;
+        }
+        
         const html = `
             <h2>Your Results</h2>
             
@@ -413,6 +430,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>You could save approximately <strong>$${Math.round(results.savings).toLocaleString()}</strong> 
                 over ${document.getElementById('keep-years').value} years</p>
             </div>
+            
+            ${warningMessage}
             
             <div class="comparison">
                 <div class="option repair-option">
