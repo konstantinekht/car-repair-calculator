@@ -20,10 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const form = document.getElementById('calculator-form');
     
-    // Mileage and age fields
-    const mileageField = document.getElementById('mileage');
-    const carAgeField = document.getElementById('car-age');
-    
     let currentMode = 'manual';
     let currentRepairMode = 'manual-repair';
     let selectedCarData = null;
@@ -47,16 +43,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     manualInput.style.display = 'block';
                     estimateInput.style.display = 'none';
                     document.getElementById('car-value').required = true;
-                    // Make mileage and age required when manual
-                    mileageField.required = true;
-                    carAgeField.required = true;
                 } else {
                     manualInput.style.display = 'none';
                     estimateInput.style.display = 'block';
                     document.getElementById('car-value').required = false;
-                    // Don't require mileage and age when estimating
-                    mileageField.required = false;
-                    carAgeField.required = false;
                     populateYearDropdown();
                 }
             }
@@ -233,21 +223,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get car value
         let carValue;
-        let carYear;
         if (currentMode === 'manual') {
             carValue = parseFloat(document.getElementById('car-value').value);
             if (!carValue) {
                 alert('Please enter your car\'s value');
                 return;
             }
-            carYear = null; // Not available in manual mode
         } else {
             if (!selectedCarData) {
                 alert('Please select a car from the dropdowns');
                 return;
             }
             carValue = selectedCarData.currentValue;
-            carYear = selectedCarData.year;
         }
         
         // Get repair cost
@@ -266,18 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
             repairCost = selectedRepairData.avgCost;
         }
         
-        // Mileage and age - use if provided, otherwise estimate from car year
-        let mileage, carAge;
-        if (currentMode === 'manual') {
-            mileage = parseInt(document.getElementById('mileage').value);
-            carAge = parseInt(document.getElementById('car-age').value);
-        } else {
-            // Estimate from selected car year
-            const currentYear = 2026;
-            carAge = currentYear - carYear;
-            mileage = carAge * 12000; // Assume 12k miles per year
-        }
-        
+        const mileage = parseInt(document.getElementById('mileage').value);
+        const carAge = parseInt(document.getElementById('car-age').value);
         const keepYears = parseInt(document.getElementById('keep-years').value);
         const userState = document.getElementById('user-state').value;
         const replacementBudgetInput = document.getElementById('replacement-budget').value;
@@ -351,20 +328,15 @@ document.addEventListener('DOMContentLoaded', function() {
         let recommendation;
         let savings;
         
-        // FIXED: Proper recommendation logic
         if (repairToValueRatio > 0.5 || mileage > 150000) {
-            // High repair cost or high mileage = suggest replace
             recommendation = 'REPLACE';
             savings = repairOption.totalCost - replaceOption.totalCost;
+        } else if (repairOption.totalCost < replaceOption.totalCost) {
+            recommendation = 'REPAIR';
+            savings = replaceOption.totalCost - repairOption.totalCost;
         } else {
-            // Otherwise, go with whichever is cheaper
-            if (repairOption.totalCost < replaceOption.totalCost) {
-                recommendation = 'REPAIR';
-                savings = replaceOption.totalCost - repairOption.totalCost;
-            } else {
-                recommendation = 'REPLACE';
-                savings = repairOption.totalCost - replaceOption.totalCost;
-            }
+            recommendation = 'REPLACE';
+            savings = repairOption.totalCost - replaceOption.totalCost;
         }
         
         return {
