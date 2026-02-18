@@ -320,22 +320,32 @@ document.addEventListener('DOMContentLoaded', function() {
             (repairOption.yearlyInsurance + repairOption.yearlyMaintenance) * keepYears;
         
         const replacementCarValue = replacementBudget || (carValue * 1.3);
-        let downPaymentNeeded = replacementCarValue * 0.2;
+        const standardDownPayment = replacementCarValue * 0.2;  // 20% down
         let tradeInCredit = 0;
+        let cashDownPaymentNeeded = standardDownPayment;
+        let loanAmount = 0;
         
         if (willTradeIn) {
             tradeInCredit = carValue;
-            downPaymentNeeded = Math.max(0, downPaymentNeeded - tradeInCredit);
+            // Trade-in can cover some or all of the down payment
+            cashDownPaymentNeeded = Math.max(0, standardDownPayment - tradeInCredit);
+            
+            // What's left after trade-in?
+            const remainingAfterTradeIn = replacementCarValue - tradeInCredit;
+            
+            // Loan is what's left after trade-in minus any additional cash down
+            loanAmount = Math.max(0, remainingAfterTradeIn - cashDownPaymentNeeded);
+        } else {
+            // No trade-in: standard 20% down, finance the rest
+            loanAmount = replacementCarValue - standardDownPayment;
         }
         
-        const totalUpfront = willTradeIn ? (replacementCarValue * 0.2) : downPaymentNeeded;
-        const loanAmount = replacementCarValue - totalUpfront - (willTradeIn ? tradeInCredit : 0);
         const monthlyPayment = loanAmount > 0 ? calculateMonthlyPayment(loanAmount, 0.07, keepYears) : 0;
         
         const replaceOption = {
             replacementCarValue: replacementCarValue,
             tradeInCredit: tradeInCredit,
-            downPayment: downPaymentNeeded,
+            downPayment: cashDownPaymentNeeded,
             loanAmount: loanAmount,
             monthlyPayment: monthlyPayment,
             yearlyInsurance: stateInsurance.avgAnnualPremium,
@@ -343,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
             totalCost: 0
         };
         
-        replaceOption.totalCost = downPaymentNeeded + 
+        replaceOption.totalCost = cashDownPaymentNeeded + 
             (monthlyPayment * 12 * keepYears) + 
             (replaceOption.yearlyInsurance + replaceOption.yearlyMaintenance) * keepYears;
         
