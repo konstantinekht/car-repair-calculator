@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="recommendation ${results.recommendation.toLowerCase()}">
                 <h3>💡 Recommendation: ${results.recommendation}</h3>
                 <p>You could save approximately <strong>$${Math.round(results.savings).toLocaleString()}</strong> 
-                over ${document.getElementById('keep-years').value} years</p>
+                over ${parseInt(document.getElementById('keep-years').value, 10) || 0} years</p>
             </div>
             
             ${warningMessage}
