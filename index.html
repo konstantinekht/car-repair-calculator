@@ -66,6 +66,7 @@
 
                     <!-- Estimate Input (hidden by default) -->
                     <div id="estimate-input" class="input-mode" style="display: none;">
+                        <p><small>Values are estimated using Kelley Blue Book fair market prices, assuming 12,000 miles/year average.</small></p>
                         <div class="form-group">
                             <label for="car-year">Year</label>
                             <select id="car-year" name="carYear">
@@ -96,15 +97,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="mileage">Current Mileage</label>
-                        <input type="number" id="mileage" name="mileage" placeholder="e.g., 125000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="car-age">Car Age (years)</label>
-                        <input type="number" id="car-age" name="carAge" placeholder="e.g., 9" required>
-                    </div>
                 </section>
 
                 <!-- Repair Information Section -->
@@ -165,6 +157,17 @@
                         <label for="replacement-budget">If replacing, what's your budget for the next car?</label>
                         <input type="number" id="replacement-budget" name="replacementBudget" placeholder="e.g., 18000">
                         <small>Leave blank to estimate based on current car value</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="current-monthly-payment">Current monthly payment on this car <span style="font-weight: normal">(optional)</span></label>
+                        <input type="number" id="current-monthly-payment" name="currentMonthlyPayment" placeholder="e.g., 350" min="0">
+                        <small>Leave blank if your car is paid off</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loan-months-remaining">Months remaining on loan <span style="font-weight: normal">(optional)</span></label>
+                        <input type="number" id="loan-months-remaining" name="loanMonthsRemaining" placeholder="e.g., 24" min="1">
                     </div>
 
                     <!-- NEW FIELD 2: Trade-in checkbox -->
