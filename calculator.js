@@ -258,6 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Derive car age from selected year when available (used for maintenance estimate)
         const carAge = carYear ? 2026 - carYear : null;
+        // In manual mode read optional mileage; in estimate mode derive from carAge
+        const mileageVal = document.getElementById('mileage').value;
+        const mileage = currentMode === 'manual'
+            ? (mileageVal ? parseInt(mileageVal) : null)
+            : (carAge ? carAge * 12000 : null);
 
         const keepYears = parseInt(document.getElementById('keep-years').value);
         const userState = document.getElementById('user-state').value;
@@ -272,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const results = calculateRepairVsReplace({
             carValue,
             carAge,
+            mileage,
             repairCost,
             keepYears,
             userState,
@@ -289,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // CALCULATION LOGIC
     // ========================================
     function calculateRepairVsReplace(inputs) {
-        const { carValue, carAge, repairCost, keepYears, userState, replacementBudget, willTradeIn, yearlyDropPercent, currentMonthlyPayment, loanMonthsRemaining } = inputs;
+        const { carValue, carAge, mileage, repairCost, keepYears, userState, replacementBudget, willTradeIn, yearlyDropPercent, currentMonthlyPayment, loanMonthsRemaining } = inputs;
         
         const stateInsurance = insuranceCosts.find(s => s.state === userState) || { avgAnnualPremium: 1500 };
         
@@ -298,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const repairOption = {
             upfrontCost: repairCost,
             yearlyInsurance: stateInsurance.avgAnnualPremium,
-            yearlyMaintenance: estimateMaintenance(carAge),
+            yearlyMaintenance: estimateMaintenance(carAge, mileage),
             loanPaymentsDuringKeep: loanPaymentsDuringKeep,
             depreciation: yearlyDropPercent / 100,
             futureValue: carValue * Math.pow(1 - (yearlyDropPercent / 100), keepYears),
@@ -373,10 +379,10 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function estimateMaintenance(carAge) {
-        if (!carAge || carAge <= 8) return 800;
-        if (carAge <= 12) return 1200;
-        return 1500;
+    function estimateMaintenance(carAge, mileage) {
+        if ((mileage && mileage > 150000) || (carAge && carAge > 12)) return 1500;
+        if ((mileage && mileage > 100000) || (carAge && carAge > 8)) return 1200;
+        return 800;
     }
 
     function calculateMonthlyPayment(principal, annualRate, years) {
