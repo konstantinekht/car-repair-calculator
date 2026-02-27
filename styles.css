@@ -432,3 +432,102 @@ footer {
     display: block;
     margin-bottom: 5px;
 }
+/* ========================================
+   INTRO CONTENT
+   ======================================== */
+
+.intro-content {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.intro-container {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    margin-bottom: 40px;
+}
+
+.intro-container h2 {
+    color: #667eea;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.intro-container h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin: 30px 0 15px 0;
+}
+
+.intro-container p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    font-size: 1.05rem;
+}
+
+.how-it-works {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin: 25px 0;
+}
+
+.step {
+    background: #f8f9ff;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.step-number {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    line-height: 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.step h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.step p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.cta-box {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.cta-box p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .how-it-works {
+        grid-template-columns: 1fr;
+    }
+    
+    .intro-container {
+        padding: 25px;
+    }
+}

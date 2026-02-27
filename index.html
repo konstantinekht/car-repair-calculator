@@ -29,12 +29,73 @@
     <!-- Impact Verification -->
     <div style="display:none;">Impact-Site-Verification: 81f8280f-0d85-4213-a301-d1d7654c62ea</div>
     
-    <header>
-        <h1>🚗 Should You Repair or Replace Your Car?</h1>
-        <p>Get a data-driven answer in 60 seconds</p>
-    </header>
+<header>
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+        <div>
+            <h1>🚗 Should You Repair or Replace Your Car?</h1>
+            <p>Get a data-driven answer in 60 seconds</p>
+        </div>
+        <nav style="display: flex; gap: 20px;">
+            <a href="index.html" style="color: white; font-weight: 600;">Calculator</a>
+            <a href="about.html" style="color: white; font-weight: 600;">About</a>
+            <a href="#blog" style="color: white; font-weight: 600;">Blog</a>
+        </nav>
+    </div>
+</header>
 
-    <main>
+    <div class="intro-content">
+    <div class="intro-container">
+        <h2>Making Smart Car Repair Decisions</h2>
+        <p>
+            Facing a major car repair? You're not alone. Every year, millions of car owners 
+            struggle with the same question: Is it worth fixing, or should I cut my losses 
+            and replace it?
+        </p>
+        <p>
+            The answer isn't always obvious. A $3,000 repair might make perfect sense for 
+            one car but be a terrible investment for another. That's where our free calculator 
+            comes in.
+        </p>
+        
+        <h3>How It Works</h3>
+        <div class="how-it-works">
+            <div class="step">
+                <span class="step-number">1</span>
+                <h4>Enter Your Car's Information</h4>
+                <p>Tell us your car's current value (or let us estimate it), mileage, and age.</p>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <h4>Add Repair Details</h4>
+                <p>Enter your repair quote or select from common repair types to get an estimate.</p>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <h4>Get Your Recommendation</h4>
+                <p>See a complete cost comparison over your planning timeline, including insurance, 
+                maintenance, and depreciation.</p>
+            </div>
+        </div>
+        
+        <h3>What Makes This Different</h3>
+        <p>
+            Most advice about car repairs is based on simple rules of thumb like "never spend 
+            more than 50% of your car's value." But those rules ignore your specific situation: 
+            How long do you plan to keep the car? What's your budget for a replacement? Are you 
+            willing to trade in your current car?
+        </p>
+        <p>
+            Our calculator factors in all of these variables to give you a personalized 
+            recommendation based on actual total costs, not just gut feelings or generic advice.
+        </p>
+        
+        <div class="cta-box">
+            <p><strong>Ready to make a smart decision?</strong> Use the calculator below - it takes less than 60 seconds.</p>
+        </div>
+    </div>
+</div>
+
+<main>
         <div class="calculator-container">
             <form id="calculator-form">
                 
@@ -254,7 +315,7 @@
         </div>
 
         <!-- Blog Links Section -->
-        <div class="blog-links">
+        <div class="blog-links" id="blog">
             <h2>Helpful Car Guides</h2>
             <div class="blog-grid">
                 <a href="blog/when-to-replace-your-car/index.html" class="blog-card">
@@ -289,8 +350,10 @@
 
 <footer>
     <p>Free tool to help you make smart car decisions. Not financial advice.</p>
+    <p><a href="about.html" style="color: white; text-decoration: underline;">About</a> | 
+    <a href="blog/when-to-replace-your-car/index.html" style="color: white; text-decoration: underline;">Blog</a></p>
     <p><small>This site uses Google Analytics to understand visitor behavior. 
-    <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a></small></p>
+    <a href="https://policies.google.com/privacy" target="_blank" style="color: white;">Google's Privacy Policy</a></small></p>
 </footer>
 
     <script src="data/car-data.js"></script>
