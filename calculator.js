@@ -20,6 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const form = document.getElementById('calculator-form');
     
+    // Mileage and age fields
+    const mileageField = document.getElementById('mileage');
+    const carAgeField = document.getElementById('car-age');
+    
     let currentMode = 'manual';
     let currentRepairMode = 'manual-repair';
     let selectedCarData = null;
@@ -43,10 +47,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     manualInput.style.display = 'block';
                     estimateInput.style.display = 'none';
                     document.getElementById('car-value').required = true;
+                    // Make mileage and age required when manual
+                    mileageField.required = true;
+                    carAgeField.required = true;
                 } else {
                     manualInput.style.display = 'none';
                     estimateInput.style.display = 'block';
                     document.getElementById('car-value').required = false;
+                    // Don't require mileage and age when estimating
+                    mileageField.required = false;
+                    carAgeField.required = false;
                     populateYearDropdown();
                 }
             }
@@ -256,35 +266,33 @@ document.addEventListener('DOMContentLoaded', function() {
             repairCost = selectedRepairData.avgCost;
         }
         
-        // Derive car age from selected year when available (used for maintenance estimate)
-        const carAge = carYear ? 2026 - carYear : null;
-        // In manual mode read optional mileage; in estimate mode derive from carAge
-        const mileageVal = document.getElementById('mileage').value;
-        const mileage = currentMode === 'manual'
-            ? (mileageVal ? parseInt(mileageVal) : null)
-            : (carAge ? carAge * 12000 : null);
-
+        // Mileage and age - use if provided, otherwise estimate from car year
+        let mileage, carAge;
+        if (currentMode === 'manual') {
+            mileage = parseInt(document.getElementById('mileage').value);
+            carAge = parseInt(document.getElementById('car-age').value);
+        } else {
+            // Estimate from selected car year
+            const currentYear = 2026;
+            carAge = currentYear - carYear;
+            mileage = carAge * 12000; // Assume 12k miles per year
+        }
+        
         const keepYears = parseInt(document.getElementById('keep-years').value);
         const userState = document.getElementById('user-state').value;
         const replacementBudgetInput = document.getElementById('replacement-budget').value;
         const replacementBudget = replacementBudgetInput ? parseFloat(replacementBudgetInput) : null;
         const willTradeIn = document.getElementById('trade-in').checked;
-        const currentMonthlyPaymentVal = document.getElementById('current-monthly-payment').value;
-        const loanMonthsRemainingVal = document.getElementById('loan-months-remaining').value;
-        const currentMonthlyPayment = currentMonthlyPaymentVal ? parseFloat(currentMonthlyPaymentVal) : 0;
-        const loanMonthsRemaining = loanMonthsRemainingVal ? parseInt(loanMonthsRemainingVal) : 0;
-
+        
         const results = calculateRepairVsReplace({
             carValue,
-            carAge,
             mileage,
+            carAge,
             repairCost,
             keepYears,
             userState,
             replacementBudget,
             willTradeIn,
-            currentMonthlyPayment,
-            loanMonthsRemaining,
             yearlyDropPercent: selectedCarData ? selectedCarData.yearlyDropPercent : 9
         });
         
@@ -295,25 +303,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // CALCULATION LOGIC
     // ========================================
     function calculateRepairVsReplace(inputs) {
-        const { carValue, carAge, mileage, repairCost, keepYears, userState, replacementBudget, willTradeIn, yearlyDropPercent, currentMonthlyPayment, loanMonthsRemaining } = inputs;
+        const { carValue, mileage, carAge, repairCost, keepYears, userState, replacementBudget, willTradeIn, yearlyDropPercent } = inputs;
         
         const stateInsurance = insuranceCosts.find(s => s.state === userState) || { avgAnnualPremium: 1500 };
         
-        const loanPaymentsDuringKeep = Math.min(loanMonthsRemaining, keepYears * 12) * currentMonthlyPayment;
-
         const repairOption = {
             upfrontCost: repairCost,
             yearlyInsurance: stateInsurance.avgAnnualPremium,
-            yearlyMaintenance: estimateMaintenance(carAge, mileage),
-            loanPaymentsDuringKeep: loanPaymentsDuringKeep,
+            yearlyMaintenance: estimateMaintenance(mileage, carAge),
             depreciation: yearlyDropPercent / 100,
             futureValue: carValue * Math.pow(1 - (yearlyDropPercent / 100), keepYears),
             totalCost: 0
         };
-
-        repairOption.totalCost = repairCost +
-            (repairOption.yearlyInsurance + repairOption.yearlyMaintenance) * keepYears +
-            loanPaymentsDuringKeep;
+        
+        repairOption.totalCost = repairCost + 
+            (repairOption.yearlyInsurance + repairOption.yearlyMaintenance) * keepYears;
         
         const replacementCarValue = replacementBudget || (carValue * 1.3);
         const standardDownPayment = replacementCarValue * 0.2;  // 20% down
@@ -368,20 +372,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add warning note if repair-to-value ratio is high (even if repair is cheaper)
         const hasHighRatio = repairToValueRatio > 0.5;
-
+        const hasHighMileage = mileage > 150000;
+        
         return {
             recommendation,
             savings: Math.abs(savings),
             repairOption,
             replaceOption,
             repairToValueRatio,
-            hasHighRatio
+            hasHighRatio,
+            hasHighMileage
         };
     }
 
-    function estimateMaintenance(carAge, mileage) {
-        if ((mileage && mileage > 150000) || (carAge && carAge > 12)) return 1500;
-        if ((mileage && mileage > 100000) || (carAge && carAge > 8)) return 1200;
+    function estimateMaintenance(mileage, age) {
+        if (mileage > 150000 || age > 12) return 1500;
+        if (mileage > 100000 || age > 8) return 1200;
         return 800;
     }
 
@@ -408,6 +414,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
+        if (results.recommendation === 'REPAIR' && results.hasHighMileage) {
+            warningMessage += `
+                <div class="warning-box">
+                    <strong>⚠️ Note:</strong> Your car has over 150,000 miles. Even if repair is cheaper now, expect higher maintenance costs going forward.
+                </div>
+            `;
+        }
+        
+        // Build affiliate CTA based on recommendation
+        let affiliateCTA = '';
+        if (results.recommendation === 'REPAIR') {
+            affiliateCTA = `
+                <div class="affiliate-cta repair-cta">
+                    <h4>🔧 Need parts for the repair?</h4>
+                    <p>Find the exact part for your make and model at competitive prices, with fast shipping.</p>
+                    <a href="https://click.linksynergy.com/fs-bin/click?id=bbydo27bxgo&offerid=1906383.9&type=3&subid=0" target="_blank" rel="nofollow sponsored" class="cta-button">
+                        Shop Parts on CarParts.com →
+                    </a>
+                    <img border="0" width="1" alt="" height="1" src="https://ad.linksynergy.com/fs-bin/show?id=bbydo27bxgo&bids=1906383.9&type=3&subid=0" style="position:absolute;">
+                </div>
+            `;
+        } else {
+            affiliateCTA = `
+                <div class="affiliate-cta replace-cta">
+                    <h4>🚗 Ready to start shopping?</h4>
+                    <p>Compare prices, read reviews, and see what's available near you.</p>
+                    <a href="https://www.edmunds.com" target="_blank" rel="nofollow" class="cta-button">
+                        Browse Cars on Edmunds →
+                    </a>
+                </div>
+            `;
+        }
         
         const html = `
             <h2>Your Results</h2>
@@ -415,17 +453,18 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="recommendation ${results.recommendation.toLowerCase()}">
                 <h3>💡 Recommendation: ${results.recommendation}</h3>
                 <p>You could save approximately <strong>$${Math.round(results.savings).toLocaleString()}</strong> 
-                over ${parseInt(document.getElementById('keep-years').value, 10) || 0} years</p>
+                over ${document.getElementById('keep-years').value} years</p>
             </div>
             
             ${warningMessage}
+            
+            ${affiliateCTA}
             
             <div class="comparison">
                 <div class="option repair-option">
                     <h3>🔧 Repair & Keep</h3>
                     <div class="cost-breakdown">
                         <p><strong>Upfront:</strong> $${results.repairOption.upfrontCost.toLocaleString()}</p>
-                        ${results.repairOption.loanPaymentsDuringKeep > 0 ? `<p><strong>Remaining Loan Payments:</strong> $${Math.round(results.repairOption.loanPaymentsDuringKeep).toLocaleString()}</p>` : ''}
                         <p><strong>Yearly Insurance:</strong> $${results.repairOption.yearlyInsurance.toLocaleString()}</p>
                         <p><strong>Yearly Maintenance:</strong> $${results.repairOption.yearlyMaintenance.toLocaleString()}</p>
                         <p class="total"><strong>Total Cost:</strong> $${Math.round(results.repairOption.totalCost).toLocaleString()}</p>
