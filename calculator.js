@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="affiliate-cta repair-cta">
                     <h4>🔧 Need parts for the repair?</h4>
                     <p>Find the exact part for your make and model at competitive prices, with fast shipping.</p>
-                    <a href="https://click.linksynergy.com/fs-bin/click?id=bbydo27bxgo&offerid=1906383.9&type=3&subid=0" target="_blank" rel="nofollow sponsored" class="cta-button">
+                    <a href="https://click.linksynergy.com/fs-bin/click?id=bbydo27bxgo&offerid=1906383.9&type=3&subid=0" target="_blank" rel="nofollow sponsored" class="cta-button" id="carparts-cta-link">
                         Shop Parts on CarParts.com →
                     </a>
                     <img border="0" width="1" alt="" height="1" src="https://ad.linksynergy.com/fs-bin/show?id=bbydo27bxgo&bids=1906383.9&type=3&subid=0" style="position:absolute;">
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="affiliate-cta replace-cta">
                     <h4>🚗 Ready to start shopping?</h4>
                     <p>Compare prices, read reviews, and see what's available near you.</p>
-                    <a href="https://www.edmunds.com" target="_blank" rel="nofollow" class="cta-button">
+                    <a href="https://www.edmunds.com" target="_blank" rel="nofollow" class="cta-button" id="edmunds-cta-link">
                         Browse Cars on Edmunds →
                     </a>
                 </div>
@@ -485,6 +485,42 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsContainer.innerHTML = html;
         resultsContainer.style.display = 'block';
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Track calculator submission in Google Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'calculator_submit', {
+                'event_category': 'engagement',
+                'event_label': results.recommendation,
+                'value': Math.round(results.savings)
+            });
+        }
+        
+        // Track affiliate CTA clicks
+        const carPartsLink = document.getElementById('carparts-cta-link');
+        if (carPartsLink) {
+            carPartsLink.addEventListener('click', function() {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'affiliate_click', {
+                        'event_category': 'monetization',
+                        'event_label': 'carparts_calculator_cta',
+                        'value': 1
+                    });
+                }
+            });
+        }
+        
+        const edmundsLink = document.getElementById('edmunds-cta-link');
+        if (edmundsLink) {
+            edmundsLink.addEventListener('click', function() {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'affiliate_click', {
+                        'event_category': 'monetization',
+                        'event_label': 'edmunds_calculator_cta',
+                        'value': 1
+                    });
+                }
+            });
+        }
     }
 
 });
