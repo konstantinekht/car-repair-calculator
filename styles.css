@@ -531,3 +531,60 @@ footer {
         padding: 25px;
     }
 }
+/* ========================================
+   AFFILIATE CTA BOXES
+   ======================================== */
+
+.affiliate-cta {
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.affiliate-cta h4 {
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.affiliate-cta p {
+    margin: 0 0 15px 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.repair-cta {
+    background: #fff4e5;
+    border: 2px solid #ff9800;
+}
+
+.replace-cta {
+    background: #e8f0ff;
+    border: 2px solid #667eea;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.repair-cta .cta-button {
+    background: #ff9800;
+    color: white;
+}
+
+.replace-cta .cta-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
