@@ -96,6 +96,64 @@ article ul li {
     margin-top: 50px;
 }
 
+/* Related Guides */
+.related-guides {
+    margin: 50px 0 30px 0;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.related-guides h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.related-guides-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.related-guide-card {
+    display: block;
+    background: #f8f9ff;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: #333;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.related-guide-card:hover {
+    transform: translateY(-3px);
+    border-color: #667eea;
+}
+
+.related-guide-card span.label {
+    display: block;
+    font-size: 0.8rem;
+    color: #667eea;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.related-guide-card span.title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .related-guides-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .blog-container {
